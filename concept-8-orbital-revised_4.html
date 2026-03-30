@@ -1,0 +1,611 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cody Sherman</title>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Grotesk:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair !important; }
+:root {
+  --bg: #030814;
+  --surface: #07101f;
+  --cyan: #00cfff;
+  --cyan2: #0080aa;
+  --magenta: #e8005a;
+  --text: #9ac8e0;
+  --muted: #1a4060;
+  --mono: 'Space Mono', monospace;
+  --body: 'Space Grotesk', sans-serif;
+  --vt: 'VT323', monospace;
+}
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--body);
+  font-weight: 300;
+  min-height: 100vh;
+  overflow-x: hidden;
+  cursor: crosshair;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
+  pointer-events: none; z-index: 9997;
+}
+
+/* Coordinate grid */
+.coord-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,207,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,207,255,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* ── ORBITAL SYSTEM ── */
+/* All rings and dots live here, fixed in background */
+.orbital-system {
+  position: fixed;
+  top: 50vh; left: 50vw;
+  width: 0; height: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(0,207,255,0.07);
+  transform: translate(-50%, -50%);
+}
+/* Elliptical / tilted rings via scale */
+.ring.r1  { width: 280px;  height: 280px; }
+.ring.r2  { width: 440px;  height: 440px; opacity: 0.8; }
+.ring.r3  { width: 620px;  height: 620px; opacity: 0.65; }
+.ring.r4  { width: 820px;  height: 820px; opacity: 0.5; border-color: rgba(232,0,90,0.06); }
+.ring.r5  { width: 1040px; height: 1040px; opacity: 0.35; }
+.ring.r6  { width: 1300px; height: 1300px; opacity: 0.22; border-color: rgba(0,207,255,0.05); }
+.ring.r7  { width: 1600px; height: 1600px; opacity: 0.14; }
+
+/* Each orbiter is a wrapper that rotates; the dot is offset to the radius */
+.orbiter {
+  position: absolute;
+  top: 0; left: 0;
+  width: 0; height: 0;
+  animation: spin linear infinite;
+}
+.orbiter .dot {
+  position: absolute;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+}
+
+/* ── Orbit durations & radii ── */
+/* Ring 1 — 140px radius */
+.o1a { animation-duration: 20s; }
+.o1a .dot { width: 4px; height: 4px; top: -140px; background: var(--cyan); box-shadow: 0 0 6px var(--cyan), 0 0 14px var(--cyan); opacity: 0.8; }
+
+/* Ring 2 — 220px radius */
+.o2a { animation-duration: 34s; }
+.o2a .dot { width: 5px; height: 5px; top: -220px; background: var(--cyan); box-shadow: 0 0 8px var(--cyan), 0 0 20px var(--cyan); opacity: 0.65; }
+.o2b { animation-duration: 34s; animation-delay: -17s; }
+.o2b .dot { width: 3px; height: 3px; top: -220px; background: var(--magenta); box-shadow: 0 0 6px var(--magenta); opacity: 0.5; }
+
+/* Ring 3 — 310px radius */
+.o3a { animation-duration: 52s; }
+.o3a .dot { width: 6px; height: 6px; top: -310px; background: #fff; box-shadow: 0 0 6px rgba(255,255,255,0.8); opacity: 0.55; }
+.o3b { animation-duration: 52s; animation-delay: -26s; }
+.o3b .dot { width: 4px; height: 4px; top: -310px; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); opacity: 0.5; }
+.o3c { animation-duration: 52s; animation-delay: -12s; }
+.o3c .dot { width: 3px; height: 3px; top: -310px; background: var(--magenta); box-shadow: 0 0 5px var(--magenta); opacity: 0.45; }
+
+/* Ring 4 — 410px radius — slower, magenta tint */
+.o4a { animation-duration: 76s; }
+.o4a .dot { width: 5px; height: 5px; top: -410px; background: var(--magenta); box-shadow: 0 0 10px var(--magenta), 0 0 24px var(--magenta); opacity: 0.6; }
+.o4b { animation-duration: 76s; animation-delay: -38s; }
+.o4b .dot { width: 3px; height: 3px; top: -410px; background: var(--cyan); box-shadow: 0 0 6px var(--cyan); opacity: 0.4; }
+.o4c { animation-duration: 76s; animation-delay: -18s; }
+.o4c .dot { width: 4px; height: 4px; top: -410px; background: #fff; box-shadow: 0 0 5px rgba(255,255,255,0.6); opacity: 0.3; }
+
+/* Ring 5 — 520px radius */
+.o5a { animation-duration: 108s; }
+.o5a .dot { width: 7px; height: 7px; top: -520px; background: var(--cyan); box-shadow: 0 0 12px var(--cyan), 0 0 28px var(--cyan); opacity: 0.5; }
+.o5b { animation-duration: 108s; animation-delay: -54s; }
+.o5b .dot { width: 4px; height: 4px; top: -520px; background: var(--magenta); box-shadow: 0 0 8px var(--magenta); opacity: 0.4; }
+.o5c { animation-duration: 108s; animation-delay: -36s; }
+.o5c .dot { width: 3px; height: 3px; top: -520px; background: #fff; opacity: 0.25; }
+
+/* Ring 6 — 650px radius */
+.o6a { animation-duration: 150s; animation-direction: reverse; }
+.o6a .dot { width: 4px; height: 4px; top: -650px; background: var(--cyan); box-shadow: 0 0 8px var(--cyan); opacity: 0.35; }
+.o6b { animation-duration: 150s; animation-direction: reverse; animation-delay: -74s; }
+.o6b .dot { width: 5px; height: 5px; top: -650px; background: var(--magenta); box-shadow: 0 0 10px var(--magenta); opacity: 0.3; }
+
+/* Ring 7 — 800px radius — very slow */
+.o7a { animation-duration: 220s; }
+.o7a .dot { width: 5px; height: 5px; top: -800px; background: var(--cyan); box-shadow: 0 0 10px var(--cyan); opacity: 0.25; }
+.o7b { animation-duration: 220s; animation-delay: -110s; }
+.o7b .dot { width: 3px; height: 3px; top: -800px; background: #fff; opacity: 0.18; }
+
+/* Center pulsar */
+.center-pulsar {
+  position: absolute;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--cyan);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 12px var(--cyan), 0 0 30px var(--cyan), 0 0 60px rgba(0,207,255,0.4);
+  animation: centerPulse 8s ease-in-out infinite;
+  z-index: 5;
+}
+.center-pulsar::before, .center-pulsar::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid rgba(0,207,255,0.3);
+  top: 50%; left: 50%;
+  transform: translate(-50%, -50%);
+  animation: centerRingExpand 32s ease-out infinite;
+}
+.center-pulsar::after {
+  animation-delay: -16s;
+}
+@keyframes centerPulse {
+  0%, 100% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  50% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.6); }
+}
+@keyframes centerRingExpand {
+  0% { width: 8px; height: 8px; opacity: 0.5; }
+  100% { width: 80px; height: 80px; opacity: 0; }
+}
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+
+/* ── PULSAR ── */
+.pulsar {
+  position: absolute;
+  top: 0; left: 0;
+  width: 0; height: 0;
+  pointer-events: none;
+}
+.pulsar-core {
+  position: absolute;
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: #fff;
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 6px 2px var(--cyan), 0 0 18px 4px rgba(0,207,255,0.5);
+  animation: pulsarCore 2.4s ease-in-out infinite;
+}
+@keyframes pulsarCore {
+  0%, 100% { transform: translate(-50%,-50%) scale(1); opacity: 1; }
+  50%       { transform: translate(-50%,-50%) scale(1.6); opacity: 0.7; }
+}
+
+/* Expanding pulse rings */
+.pulsar-ring {
+  position: absolute;
+  border-radius: 50%;
+  border: 1px solid var(--cyan);
+  transform: translate(-50%, -50%) scale(0);
+  opacity: 0;
+  animation: pulsarRing 9.6s ease-out infinite;
+}
+.pr1 { width: 60px;  height: 60px; animation-delay: 0s; }
+.pr2 { width: 60px;  height: 60px; animation-delay: -3.2s; }
+.pr3 { width: 60px;  height: 60px; animation-delay: -6.4s; }
+@keyframes pulsarRing {
+  0%   { transform: translate(-50%,-50%) scale(0); opacity: 0.6; }
+  100% { transform: translate(-50%,-50%) scale(4);  opacity: 0; }
+}
+
+/* Rotating beam lines */
+.pulsar-beam {
+  position: absolute;
+  width: 120px; height: 1px;
+  top: 0; left: 0;
+  transform-origin: 0 0;
+  background: linear-gradient(90deg, rgba(0,207,255,0.6), transparent);
+  animation: pulsarBeam 4s linear infinite;
+  opacity: 0.35;
+}
+.pb2 {
+  width: 80px;
+  animation-duration: 6.5s;
+  animation-direction: reverse;
+  background: linear-gradient(90deg, rgba(232,0,90,0.5), transparent);
+  opacity: 0.25;
+}
+@keyframes pulsarBeam {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+/* HEADER */
+header {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 200;
+  padding: 0.9rem 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(3,8,20,0.92); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,207,255,0.1);
+}
+.logo-group { display: flex; flex-direction: column; }
+.logo-main { font-family: var(--mono); font-size: 0.72rem; color: #fff; letter-spacing: 0.12em; font-weight: 700; }
+.logo-sub { font-family: var(--vt); font-size: 0.78rem; color: var(--cyan); opacity: 0.5; letter-spacing: 0.15em; }
+.header-r { display: flex; align-items: center; gap: 2.5rem; }
+.tel-stat { display: flex; flex-direction: column; align-items: flex-end; }
+.tel-label { font-size: 0.5rem; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); }
+.tel-val { font-family: var(--vt); font-size: 0.95rem; color: var(--cyan); opacity: 0.6; letter-spacing: 0.1em; }
+
+/* HERO */
+.hero {
+  min-height: 100vh; position: relative; overflow: hidden;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 7rem 2.5rem 4rem;
+}
+.hero-bg {
+  position: absolute; inset: 0;
+  background-image: url('https://stsci-opo.org/STScI-01G8GZR1XBHJ7NTJRX4HFMHAVH.png');
+  background-size: cover; background-position: center;
+  background-color: var(--bg);
+  filter: brightness(0.08) saturate(1.1) hue-rotate(190deg);
+  z-index: 1;
+  opacity: 0.5;
+}
+.hero-atm {
+  position: absolute; inset: 0; z-index: 2;
+  background:
+    radial-gradient(ellipse 60% 70% at 80% 30%, rgba(0,100,180,0.05) 0%, transparent 60%),
+    radial-gradient(ellipse 40% 50% at 10% 80%, rgba(0,207,255,0.03) 0%, transparent 60%),
+    linear-gradient(to bottom, rgba(3,8,20,0.2) 0%, transparent 50%, rgba(3,8,20,0.3) 100%);
+}
+
+.hero > *:not(.hero-bg):not(.hero-atm) { position: relative; z-index: 5; }
+
+.hero-tag {
+  font-family: var(--mono); font-size: 0.65rem; letter-spacing: 0.2em;
+  color: var(--cyan); opacity: 0.5; margin-bottom: 2rem;
+}
+.hero-name {
+  font-family: var(--mono); font-weight: 700;
+  font-size: clamp(2.5rem, 7vw, 7rem);
+  color: #fff; line-height: 1;
+  letter-spacing: -0.02em;
+  text-shadow: 0 0 40px rgba(0,207,255,0.18);
+  margin-bottom: 2.5rem;
+}
+.hero-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: end;
+}
+.hero-bio { font-size: 0.84rem; line-height: 1.9; color: var(--text); opacity: 0.7; }
+.hero-attrs { display: flex; flex-direction: column; gap: 0.6rem; align-items: flex-end; }
+.attr {
+  font-family: var(--vt); font-size: 1rem; letter-spacing: 0.12em;
+  color: var(--cyan); opacity: 0.55;
+}
+
+/* TICKER */
+.ticker {
+  border-top: 1px solid rgba(0,207,255,0.08); border-bottom: 1px solid rgba(0,207,255,0.08);
+  padding: 0.5rem 0; overflow: hidden; white-space: nowrap;
+  position: relative; z-index: 10;
+}
+.ticker-inner {
+  display: inline-block; animation: tick 30s linear infinite;
+  font-family: var(--vt); font-size: 0.9rem; letter-spacing: 0.18em;
+  color: var(--cyan); opacity: 0.3;
+}
+@keyframes tick { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+
+/* SECTIONS */
+section { padding: 2.5rem 2.5rem; position: relative; z-index: 10; }
+
+.s-label {
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.25em;
+  color: var(--cyan); opacity: 0.45; margin-bottom: 2.5rem;
+  display: flex; align-items: center; gap: 1rem;
+}
+.s-label::after { content: ''; flex: 1; height: 1px; background: var(--cyan); opacity: 0.1; max-width: 300px; }
+
+/* Domain list */
+.domain-list { display: flex; flex-direction: column; }
+.domain-item {
+  display: grid; grid-template-columns: 4rem 1fr 1fr;
+  align-items: start; gap: 3rem;
+  padding: 2rem 0;
+  border-top: 1px solid rgba(0,207,255,0.07);
+  transition: opacity 0.2s;
+}
+.domain-item:last-child { border-bottom: 1px solid rgba(0,207,255,0.07); }
+.domain-item:hover { opacity: 0.7; }
+.domain-n { font-family: var(--mono); font-size: 0.65rem; color: var(--cyan); opacity: 0.3; letter-spacing: 0.1em; padding-top: 0.15rem; }
+.domain-title { font-family: var(--mono); font-size: 0.88rem; color: #c0dff0; font-weight: 700; letter-spacing: 0.04em; }
+.domain-desc { font-size: 0.8rem; line-height: 1.85; color: var(--muted); }
+
+/* Music — same style as domain list */
+.music-list { display: flex; flex-direction: column; }
+.mitem {
+  display: grid; grid-template-columns: 4rem 1fr 1fr auto; align-items: center;
+  gap: 3rem; padding: 2rem 0;
+  border-top: 1px solid rgba(0,207,255,0.07);
+  text-decoration: none; color: inherit; transition: opacity 0.2s;
+  background: transparent;
+}
+.mitem:last-child { border-bottom: 1px solid rgba(0,207,255,0.07); }
+.mitem:hover { opacity: 0.7; }
+.m-n { font-family: var(--mono); font-size: 0.65rem; color: var(--cyan); opacity: 0.3; letter-spacing: 0.1em; }
+.m-name { font-family: var(--mono); font-weight: 700; font-size: 0.88rem; color: #c0dff0; letter-spacing: 0.04em; }
+.m-genre { font-family: var(--vt); font-size: 0.88rem; color: var(--muted); letter-spacing: 0.1em; }
+.m-arr { color: var(--cyan); opacity: 0.3; transition: transform 0.2s, opacity 0.2s; }
+.mitem:hover .m-arr { transform: translateX(4px); opacity: 0.8; }
+
+/* Lambda header link */
+.lambda-link {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 0 1.5rem 0;
+  border-bottom: 1px solid rgba(0,207,255,0.07);
+  text-decoration: none;
+  transition: opacity 0.2s;
+}
+.lambda-link:hover { opacity: 0.6; }
+.lambda-link-label { font-family: var(--mono); font-size: 0.55rem; letter-spacing: 0.2em; color: var(--muted); text-transform: uppercase; }
+.lambda-link-url { font-family: var(--mono); font-size: 0.75rem; color: var(--cyan); opacity: 0.6; letter-spacing: 0.1em; }
+
+/* Contact — same style as domain list */
+.cgrid { display: flex; flex-direction: column; }
+.cp {
+  display: grid; grid-template-columns: 4rem 1fr 1fr;
+  align-items: center; gap: 3rem;
+  padding: 2rem 0;
+  border-top: 1px solid rgba(0,207,255,0.07);
+  background: transparent; transition: opacity 0.2s;
+}
+.cp:last-child { border-bottom: 1px solid rgba(0,207,255,0.07); }
+.cp:hover { opacity: 0.7; background: transparent; }
+.cp-label { font-family: var(--mono); font-size: 0.65rem; color: var(--cyan); opacity: 0.3; letter-spacing: 0.1em; text-transform: uppercase; }
+.cp-val { font-family: var(--mono); font-weight: 700; font-size: 0.88rem; color: #c0dff0; text-decoration: none; letter-spacing: 0.04em; display: block; transition: opacity 0.2s; }
+.cp-val:hover { opacity: 0.6; }
+.cp-desc { font-size: 0.8rem; line-height: 1.85; color: var(--muted); }
+
+.nebula { height: 200px; position: relative; overflow: hidden; z-index: 5; }
+.nebula img { width: 100%; height: 100%; object-fit: cover; object-position: center 40%; filter: brightness(0.3) saturate(1.3) hue-rotate(190deg); display: block; }
+.nebula::before { content: ''; position: absolute; inset: 0; z-index: 1; background: linear-gradient(to bottom, var(--bg) 0%, transparent 20%, transparent 80%, var(--bg) 100%); }
+
+footer {
+  border-top: 1px solid rgba(0,207,255,0.07); padding: 1.2rem 2.5rem;
+  display: flex; justify-content: space-between;
+  font-family: var(--mono); font-size: 0.6rem; letter-spacing: 0.12em; color: var(--muted);
+  position: relative; z-index: 10;
+}
+
+@media (max-width: 680px) {
+  .hero-grid { grid-template-columns: 1fr; }
+  .hero-attrs { align-items: flex-start; }
+  .domain-item { grid-template-columns: 3rem 1fr; }
+  .domain-desc { display: none; }
+  .cgrid { grid-template-columns: 1fr; }
+  .mitem { grid-template-columns: 2rem 1fr auto; }
+  .m-genre { display: none; }
+}
+</style>
+</head>
+<body>
+<div class="coord-grid"></div>
+
+<!-- Orbital system — fixed, lives behind everything -->
+<div class="orbital-system">
+  <!-- Pulsar -->
+  <div class="pulsar">
+    <div class="pulsar-core"></div>
+    <div class="pulsar-ring pr1"></div>
+    <div class="pulsar-ring pr2"></div>
+    <div class="pulsar-ring pr3"></div>
+    <div class="pulsar-beam pb1"></div>
+    <div class="pulsar-beam pb2"></div>
+  </div>
+
+  <!-- Center pulsar -->
+  <div class="center-pulsar"></div>
+
+  <!-- Rings -->
+  <div class="ring r1"></div>
+  <div class="ring r2"></div>
+  <div class="ring r3"></div>
+  <div class="ring r4"></div>
+  <div class="ring r5"></div>
+  <div class="ring r6"></div>
+  <div class="ring r7"></div>
+
+  <!-- Ring 1 orbiters -->
+  <div class="orbiter o1a"><div class="dot"></div></div>
+
+  <!-- Ring 2 orbiters -->
+  <div class="orbiter o2a"><div class="dot"></div></div>
+  <div class="orbiter o2b"><div class="dot"></div></div>
+
+  <!-- Ring 3 orbiters -->
+  <div class="orbiter o3a"><div class="dot"></div></div>
+  <div class="orbiter o3b"><div class="dot"></div></div>
+  <div class="orbiter o3c"><div class="dot"></div></div>
+
+  <!-- Ring 4 orbiters -->
+  <div class="orbiter o4a"><div class="dot"></div></div>
+  <div class="orbiter o4b"><div class="dot"></div></div>
+  <div class="orbiter o4c"><div class="dot"></div></div>
+
+  <!-- Ring 5 orbiters -->
+  <div class="orbiter o5a"><div class="dot"></div></div>
+  <div class="orbiter o5b"><div class="dot"></div></div>
+  <div class="orbiter o5c"><div class="dot"></div></div>
+
+  <!-- Ring 6 orbiters (reverse direction) -->
+  <div class="orbiter o6a"><div class="dot"></div></div>
+  <div class="orbiter o6b"><div class="dot"></div></div>
+
+  <!-- Ring 7 orbiters -->
+  <div class="orbiter o7a"><div class="dot"></div></div>
+  <div class="orbiter o7b"><div class="dot"></div></div>
+</div>
+
+<header>
+  <div class="logo-group">
+    <div class="logo-main">CODY SHERMAN</div>
+    <div class="logo-sub">SYSTEMS / MUSIC</div>
+  </div>
+  <div class="header-r">
+    <div class="tel-stat">
+      <div class="tel-label">Coordinates</div>
+      <div class="tel-val">40.71°N 74.00°W</div>
+    </div>
+    <div class="tel-stat">
+      <div class="tel-label">Local Time</div>
+      <div class="tel-val" id="clock">00:00:00</div>
+    </div>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-atm"></div>
+  <div class="hero-tag">λ Ƶ</div>
+  <div class="hero-name">CODY<br>SHERMAN</div>
+  <div class="hero-grid">
+    <p class="hero-bio">I enjoy learning about complex systems — their variables and interactions. This path led through financial markets, physics, and analog circuitry, culminating in ERP design for niche industries. If you have a problem, there's a good chance I'd enjoy solving it.</p>
+    <div class="hero-attrs">
+      <div class="attr">ERP_ARCHITECT</div>
+      <div class="attr">ANALOG_SYSTEMS</div>
+      <div class="attr">MUSICIAN</div>
+      <div class="attr">DRONE_OPS</div>
+    </div>
+  </div>
+</div>
+
+<div class="ticker">
+  <div class="ticker-inner">SYSTEMS ARCHITECT &nbsp;·&nbsp; ERP DESIGN &nbsp;·&nbsp; ANALOG CIRCUITRY &nbsp;·&nbsp; FINANCIAL MARKETS &nbsp;·&nbsp; CEESH &nbsp;·&nbsp; GRASSBLOC &nbsp;·&nbsp; DRONE OPERATIONS &nbsp;·&nbsp; MUSICIAN &nbsp;·&nbsp; LAMBDA ZULU &nbsp;·&nbsp; SYSTEMS ARCHITECT &nbsp;·&nbsp; ERP DESIGN &nbsp;·&nbsp; ANALOG CIRCUITRY &nbsp;·&nbsp; FINANCIAL MARKETS &nbsp;·&nbsp; CEESH &nbsp;·&nbsp; GRASSBLOC &nbsp;·&nbsp; DRONE OPERATIONS &nbsp;·&nbsp; MUSICIAN &nbsp;·&nbsp; LAMBDA ZULU &nbsp;·&nbsp;</div>
+</div>
+
+<section>
+  <div class="s-label">// DOMAINS</div>
+  <div class="domain-list">
+    <div class="domain-item"><div class="domain-n">01</div><div class="domain-title">ERP Design & Deployment</div><div class="domain-desc">Process flow mapping and production systems for niche industries. Managing complexity across interconnected environments.</div></div>
+    <div class="domain-item"><div class="domain-n">02</div><div class="domain-title">Physics & Analog Circuitry</div><div class="domain-desc">Formal study in physics and analog circuit systems. Signal behavior, feedback dynamics, emergent properties.</div></div>
+    <div class="domain-item"><div class="domain-n">03</div><div class="domain-title">Financial Systems</div><div class="domain-desc">Applied complex systems thinking to markets — variable interaction at scale, under uncertainty.</div></div>
+    <div class="domain-item"><div class="domain-n">04</div><div class="domain-title">Drone & Aerial Work</div><div class="domain-desc">Aerial cinematography and visual documentation via @ceeshyyy on Instagram.</div></div>
+    <div class="domain-item"><div class="domain-n">05</div><div class="domain-title">Musician & Producer</div><div class="domain-desc">Recording and producing under ceesh and grassbloc via Lambda Zulu. Post punk, hip hop, instrumental, and ambient work.</div></div>
+  </div>
+</section>
+
+<section style="padding-top: 2rem;">
+  <div class="s-label">// TRANSMISSIONS</div>
+  <a class="lambda-link" href="http://lambdacorporation.net" target="_blank">
+    <div class="lambda-link-label">Label</div>
+    <div class="lambda-link-url">lambdacorporation.net ↗</div>
+  </a>
+  <div class="music-list">
+    <a class="mitem" href="https://lambdacorporation.net/ceesh.html" target="_blank" data-preview="https://lambdacorporation.net/ceesh.html" data-preview-label="ceesh"><div class="m-n">01</div><div class="m-name">ceesh</div><div class="m-genre">POST PUNK · HIP HOP · INSTRUMENTAL</div><div class="m-arr">→</div></a>
+    <a class="mitem" href="https://lambdacorporation.net/grassbloc.html" target="_blank" data-preview="https://lambdacorporation.net/grassbloc.html" data-preview-label="grassbloc"><div class="m-n">02</div><div class="m-name">grassbloc</div><div class="m-genre">AMBIENT</div><div class="m-arr">→</div></a>
+    <a class="mitem" href="https://www.instagram.com/ceeshyyy/" target="_blank"><div class="m-n">03</div><div class="m-name">@ceeshyyy</div><div class="m-genre">INSTAGRAM · DRONE + PROMO</div><div class="m-arr">→</div></a>
+  </div>
+</section>
+
+<section>
+  <div class="s-label">// CONTACT</div>
+  <div class="cgrid">
+    <div class="cp"><div class="cp-label">01</div><a class="cp-val" href="/cdn-cgi/l/email-protection#a3c0ccc7dad0cbc6d1cec2cd9494e3c4cec2cacf8dc0ccce"><span class="__cf_email__" data-cfemail="6a09050e1319020f18070b045d5d2a0d070b030644090507">[email&#160;protected]</span></a><div class="cp-desc">General inquiries & problems to solve</div></div>
+    <div class="cp"><div class="cp-label">02</div><a class="cp-val" href="/cdn-cgi/l/email-protection#3b575a56595f5a585e5e48537b5c565a525715585456"><span class="__cf_email__" data-cfemail="dbb7bab6b9bfbab8bebea8b39bbcb6bab2b7f5b8b4b6">[email&#160;protected]</span></a><div class="cp-desc">Music & media inquiries</div></div>
+  </div>
+</section>
+
+<footer>
+  <span>© 2025 CODY SHERMAN</span>
+  <span>LAMBDACORPORATION.NET</span>
+</footer>
+
+<style>
+/* ── PAGE PREVIEW POPUP ── */
+.preview-popup {
+  position: fixed;
+  z-index: 9000;
+  pointer-events: none;
+  opacity: 0;
+  transform: translateY(8px) scale(0.97);
+  transition: opacity 0.2s ease, transform 0.2s ease;
+  border: 1px solid rgba(0,207,255,0.2);
+  box-shadow: 0 0 40px rgba(0,207,255,0.1), 0 20px 60px rgba(0,0,0,0.7);
+  background: var(--bg);
+  width: 320px;
+  height: 200px;
+  overflow: hidden;
+}
+.preview-popup.visible {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+  pointer-events: none;
+}
+.preview-popup iframe {
+  width: 1280px;
+  height: 800px;
+  border: none;
+  transform: scale(0.25);
+  transform-origin: top left;
+  pointer-events: none;
+}
+.preview-popup .preview-label {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  padding: 0.35rem 0.75rem;
+  background: rgba(3,8,20,0.9);
+  border-top: 1px solid rgba(0,207,255,0.12);
+  font-family: var(--vt);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  color: var(--cyan);
+  opacity: 0.6;
+}
+</style>
+
+<!-- Preview popup element -->
+<div class="preview-popup" id="previewPopup">
+  <iframe id="previewFrame" src="" loading="lazy" sandbox="allow-same-origin allow-scripts"></iframe>
+  <div class="preview-label" id="previewLabel"></div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+  function tick() {
+    const now = new Date();
+    const pad = n => String(n).padStart(2,'0');
+    document.getElementById('clock').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+  }
+  tick(); setInterval(tick, 1000);
+
+  // Preview popup
+  const popup   = document.getElementById('previewPopup');
+  const frame   = document.getElementById('previewFrame');
+  const label   = document.getElementById('previewLabel');
+  const W = 320, H = 200, MARGIN = 16;
+  let hideTimer = null;
+
+  document.querySelectorAll('[data-preview]').forEach(el => {
+    el.addEventListener('mouseenter', e => {
+      clearTimeout(hideTimer);
+      const url  = el.dataset.preview;
+      const name = el.dataset.previewLabel || url;
+      if (frame.src !== url) {
+        frame.src = url;
+      }
+      label.textContent = name + ' ↗';
+      positionPopup(e);
+      popup.classList.add('visible');
+    });
+
+    el.addEventListener('mousemove', positionPopup);
+
+    el.addEventListener('mouseleave', () => {
+      hideTimer = setTimeout(() => popup.classList.remove('visible'), 120);
+    });
+
+    // Clicking the element navigates to the page
+    el.addEventListener('click', e => {
+      e.preventDefault();
+      window.open(el.href, '_blank');
+   
