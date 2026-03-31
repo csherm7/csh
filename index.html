@@ -13,8 +13,8 @@
   --cyan: #00cfff;
   --cyan2: #0080aa;
   --magenta: #e8005a;
-  --text: #9ac8e0;
-  --muted: #1a4060;
+  --text: #c8e4f0;
+  --muted: #4a7a96;
   --mono: 'Space Mono', monospace;
   --body: 'Space Grotesk', sans-serif;
   --vt: 'VT323', monospace;
@@ -459,7 +459,11 @@ footer {
     </div>
     <div class="tel-stat">
       <div class="tel-label">Local Time</div>
-      <div class="tel-val" id="clock">00:00:00</div>
+      <div class="tel-val" id="clock-local">00:00:00.000</div>
+    </div>
+    <div class="tel-stat">
+      <div class="tel-label">Global Time</div>
+      <div class="tel-val" id="clock-utc">00:00:00.000 UTC</div>
     </div>
   </div>
 </header>
@@ -511,8 +515,8 @@ footer {
 <section>
   <div class="s-label">// CONTACT</div>
   <div class="cgrid">
-    <div class="cp"><div class="cp-label">01</div><a class="cp-val" href="/cdn-cgi/l/email-protection#a3c0ccc7dad0cbc6d1cec2cd9494e3c4cec2cacf8dc0ccce"><span class="__cf_email__" data-cfemail="6a09050e1319020f18070b045d5d2a0d070b030644090507">[email&#160;protected]</span></a><div class="cp-desc">General inquiries & problems to solve</div></div>
-    <div class="cp"><div class="cp-label">02</div><a class="cp-val" href="/cdn-cgi/l/email-protection#3b575a56595f5a585e5e48537b5c565a525715585456"><span class="__cf_email__" data-cfemail="dbb7bab6b9bfbab8bebea8b39bbcb6bab2b7f5b8b4b6">[email&#160;protected]</span></a><div class="cp-desc">Music & media inquiries</div></div>
+        <div class="cp"><div class="cp-label">01</div><a class="cp-val" id="em1" href="#">&nbsp;</a><div class="cp-desc">General inquiries &amp; problems to solve</div></div>
+    <div class="cp"><div class="cp-label">02</div><a class="cp-val" id="em2" href="#">&nbsp;</a><div class="cp-desc">Music &amp; media inquiries</div></div></div>
   </div>
 </section>
 
@@ -570,42 +574,71 @@ footer {
   <div class="preview-label" id="previewLabel"></div>
 </div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
-  function tick() {
+<script>
+  // UTC + local clocks with milliseconds
+  function updateClock() {
     const now = new Date();
     const pad = n => String(n).padStart(2,'0');
-    document.getElementById('clock').textContent = `${pad(now.getHours())}:${pad(now.getMinutes())}:${pad(now.getSeconds())}`;
+    const ms  = String(now.getUTCMilliseconds()).padStart(3,'0');
+    const lms = String(now.getMilliseconds()).padStart(3,'0');
+    document.getElementById('clock-utc').textContent =
+      pad(now.getUTCHours())+':'+pad(now.getUTCMinutes())+':'+pad(now.getUTCSeconds())+'.'+ms+' UTC';
+    document.getElementById('clock-local').textContent =
+      pad(now.getHours())+':'+pad(now.getMinutes())+':'+pad(now.getSeconds())+'.'+lms;
   }
-  tick(); setInterval(tick, 1000);
+  updateClock();
+  setInterval(updateClock, 50);
 
   // Preview popup
-  const popup   = document.getElementById('previewPopup');
-  const frame   = document.getElementById('previewFrame');
-  const label   = document.getElementById('previewLabel');
+  const popup    = document.getElementById('previewPopup');
+  const frame    = document.getElementById('previewFrame');
+  const popLabel = document.getElementById('previewLabel');
   const W = 320, H = 200, MARGIN = 16;
-  let hideTimer = null;
+  let hideTimer  = null;
 
-  document.querySelectorAll('[data-preview]').forEach(el => {
-    el.addEventListener('mouseenter', e => {
+  document.querySelectorAll('[data-preview]').forEach(function(el) {
+    el.addEventListener('mouseenter', function(e) {
       clearTimeout(hideTimer);
-      const url  = el.dataset.preview;
-      const name = el.dataset.previewLabel || url;
-      if (frame.src !== url) {
-        frame.src = url;
-      }
-      label.textContent = name + ' ↗';
+      var url  = el.dataset.preview;
+      var name = el.dataset.previewLabel || url;
+      if (frame.src !== url) frame.src = url;
+      popLabel.textContent = name + ' \u2197';
       positionPopup(e);
       popup.classList.add('visible');
     });
-
     el.addEventListener('mousemove', positionPopup);
-
-    el.addEventListener('mouseleave', () => {
-      hideTimer = setTimeout(() => popup.classList.remove('visible'), 120);
+    el.addEventListener('mouseleave', function() {
+      hideTimer = setTimeout(function() { popup.classList.remove('visible'); }, 120);
     });
-
-    // Clicking the element navigates to the page
-    el.addEventListener('click', e => {
+    el.addEventListener('click', function(e) {
       e.preventDefault();
       window.open(el.href, '_blank');
+<<<<<<< HEAD
    
+=======
+    });
+  });
+
+  function positionPopup(e) {
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var x = e.clientX + 20;
+    var y = e.clientY - H / 2;
+    if (x + W > vw - MARGIN) x = e.clientX - W - 20;
+    if (y < MARGIN) y = MARGIN;
+    if (y + H > vh - MARGIN) y = vh - H - MARGIN;
+    popup.style.left = x + 'px';
+    popup.style.top  = y + 'px';
+  }
+  // Inject emails via JS to prevent scraping
+  (function() {
+    var e1 = ['codysherman77','gmail.com'].join('@');
+    var e2 = ['lambdaceesh','gmail.com'].join('@');
+    var a1 = document.getElementById('em1');
+    var a2 = document.getElementById('em2');
+    if (a1) { a1.href = 'mailto:' + e1; a1.textContent = e1; }
+    if (a2) { a2.href = 'mailto:' + e2; a2.textContent = e2; }
+  })();
+</script>
+</body>
+</html>
+>>>>>>> bcab561 (second git commit)
