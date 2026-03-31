@@ -402,13 +402,55 @@ footer {
 }
 
 @media (max-width: 680px) {
-  .hero-grid { grid-template-columns: 1fr; }
+  /* Header — stack to two rows on mobile */
+  header {
+    padding: 0.6rem 1rem;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.4rem;
+  }
+  .header-r {
+    width: 100%;
+    gap: 0;
+    justify-content: space-between;
+  }
+  .tel-stat { align-items: flex-start; }
+  .tel-label { font-size: 0.45rem; }
+  .tel-val { font-size: 0.72rem; }
+  .logo-main { font-size: 0.65rem; }
+  .logo-sub { font-size: 0.65rem; }
+
+  /* Orbital system — re-center for narrow screens */
+  .orbital-system { top: 60vh; left: 50vw; }
+
+  /* Hero — more padding top to clear taller header */
+  .hero { padding: 8rem 1.2rem 3rem; }
+  .hero-name { font-size: clamp(2.8rem, 14vw, 5rem); }
+  .hero-grid { grid-template-columns: 1fr; gap: 1.5rem; }
   .hero-attrs { align-items: flex-start; }
-  .domain-item { grid-template-columns: 3rem 1fr; }
+  .hero-bio { font-size: 0.82rem; }
+
+  /* Sections */
+  section { padding: 2rem 1.2rem; }
+  .domain-item { grid-template-columns: 2.5rem 1fr; gap: 1rem; }
   .domain-desc { display: none; }
-  .cgrid { grid-template-columns: 1fr; }
-  .mitem { grid-template-columns: 2rem 1fr auto; }
+
+  /* Music list */
+  .mitem { grid-template-columns: 2rem 1fr auto; gap: 1rem; }
   .m-genre { display: none; }
+  .lambda-link { padding: 0 0 1rem 0; }
+
+  /* Contact — stack vertically, hide description */
+  .cgrid { grid-template-columns: 1fr; }
+  .cp { grid-template-columns: 2rem 1fr; gap: 1rem; }
+  .cp-desc { display: none; }
+  .cp-val { font-size: 0.75rem; }
+
+  /* Ticker — smaller text */
+  .ticker-inner { font-size: 0.8rem; letter-spacing: 0.12em; }
+
+  /* Footer */
+  footer { padding: 1rem 1.2rem; flex-direction: column; gap: 0.3rem; }
 }
 </style>
 </head>
