@@ -365,10 +365,12 @@ footer {
 </div>
 
 <header>
-  <div class="logo-group">
-    <div class="logo-main">CODY SHERMAN</div>
-    <div class="logo-sub">SYSTEMS / MUSIC</div>
-  </div>
+  <a href="/" style="text-decoration:none;">
+    <div class="logo-group">
+      <div class="logo-main">CODY SHERMAN</div>
+      <div class="logo-sub">SYSTEMS / MUSIC</div>
+    </div>
+  </a>
   <div class="header-r">
     <a class="back-link" href="/">← index</a>
     <div class="hclock" id="clock">00:00:00.000 UTC</div>
@@ -414,10 +416,10 @@ footer {
     var forks   = repo.forks_count || 0;
     var liveUrl = (repo.has_pages && (!repo.homepage || repo.homepage.indexOf('github.io') !== -1))
       ? 'https://csherm7.github.io/' + repo.name + '/' : null;
-    if (liveUrl) item.dataset.liveUrl = liveUrl;
     var item    = document.createElement('div');
     item.className = 'repo-item';
     item.dataset.previewLabel = repo.name;
+    if (liveUrl) item.dataset.liveUrl = liveUrl;
     item.innerHTML =
       '<div class="repo-n">' + String(i+1).padStart(2,'0') + '</div>' +
       '<div>' +
