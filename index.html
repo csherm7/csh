@@ -680,7 +680,12 @@ footer {
     });
     el.addEventListener('click', function(e) {
       e.preventDefault();
-      window.open(el.href, '_blank');
+      // Same-origin links navigate in place; external links open new tab
+      if (el.href.startsWith(window.location.origin) || el.href.startsWith('/')) {
+        window.location.href = el.href;
+      } else {
+        window.open(el.href, '_blank');
+      }
     });
   });
 

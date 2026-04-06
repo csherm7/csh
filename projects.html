@@ -277,6 +277,24 @@ main { padding: 7rem 2.5rem 5rem; position:relative; z-index:10; max-width: 1100
   padding-top:0.6rem;
 }
 
+/* Image popup for screenshot previews */
+.img-popup {
+  position:fixed; z-index:9002; pointer-events:none;
+  opacity:0; transform:translateY(8px) scale(0.97);
+  transition:opacity 0.2s ease, transform 0.2s ease;
+  border:1px solid rgba(0,207,255,0.2);
+  box-shadow:0 0 40px rgba(0,207,255,0.1),0 20px 60px rgba(0,0,0,0.85);
+  background:#050e1c; width:380px; overflow:hidden;
+}
+.img-popup.visible { opacity:1; transform:translateY(0) scale(1); }
+.img-popup img { width:100%; height:220px; object-fit:cover; object-position:top; display:block; }
+.img-popup .img-popup-label {
+  padding:0.4rem 0.75rem;
+  background:rgba(3,8,20,0.92); border-top:1px solid rgba(0,207,255,0.12);
+  font-family:var(--vt); font-size:0.75rem; letter-spacing:0.12em;
+  color:var(--cyan); opacity:0.65;
+}
+
 /* Iframe popup for live github.io pages */
 .iframe-popup {
   position:fixed; z-index:9001; pointer-events:none;
@@ -350,6 +368,12 @@ footer {
   <div class="orbiter o7b"><div class="dot"></div></div>
 </div>
 
+<!-- Image popup for specific repos with screenshots -->
+<div class="img-popup" id="imgPopup">
+  <img id="imgPreviewSrc" src="" alt="">
+  <div class="img-popup-label" id="imgPopupLabel"></div>
+</div>
+
 <!-- Card popup for non-pages repos -->
 <div class="preview-popup" id="previewPopup">
   <div class="pp-name" id="ppName"></div>
@@ -408,6 +432,13 @@ footer {
   // Fallback is empty — repos with github.io pages are unknown without the API
   var FALLBACK_REPOS = [];
 
+  // Static screenshot map for specific repos
+  var REPO_SCREENSHOTS = {
+    'LMDrumVST':   '/preview-lmdrumvst.png',
+    'tokamak':     '/preview-tokamak.png',
+    'stellarator': '/preview-stellarator.png'
+  };
+
   function makeRepoItem(repo, i) {
     var updated = new Date(repo.pushed_at).toISOString().slice(0,10);
     var desc    = repo.description || '—';
@@ -420,6 +451,7 @@ footer {
     item.className = 'repo-item';
     item.dataset.previewLabel = repo.name;
     if (liveUrl) item.dataset.liveUrl = liveUrl;
+    if (REPO_SCREENSHOTS[repo.name]) item.dataset.screenshot = REPO_SCREENSHOTS[repo.name];
     item.innerHTML =
       '<div class="repo-n">' + String(i+1).padStart(2,'0') + '</div>' +
       '<div>' +
@@ -520,6 +552,7 @@ footer {
     function hideAll() {
       cardPopup.classList.remove('visible');
       ifrPopup.classList.remove('visible');
+      document.getElementById('imgPopup').classList.remove('visible');
     }
     function positionEl(el, e) {
       var vw = window.innerWidth, vh = window.innerHeight;
@@ -535,10 +568,24 @@ footer {
     document.querySelectorAll('[data-preview-label]').forEach(function(el) {
       el.addEventListener('mouseenter', function(e) {
         clearTimeout(hideTimer);
-        var r       = el._repoData;
-        var liveUrl = el.dataset.liveUrl || null;
+        var r          = el._repoData;
+        var liveUrl    = el.dataset.liveUrl    || null;
+        var screenshot = el.dataset.screenshot || null;
         if (!r) return;
-        if (liveUrl) {
+
+        // Priority: screenshot > iframe > card
+        if (screenshot) {
+          var imgEl = document.getElementById('imgPreviewSrc');
+          if (imgEl.dataset.loaded !== screenshot) {
+            imgEl.src = screenshot;
+            imgEl.dataset.loaded = screenshot;
+          }
+          document.getElementById('imgPopupLabel').textContent = r.name + ' ↗';
+          positionEl(document.getElementById('imgPopup'), e);
+          document.getElementById('imgPopup').classList.add('visible');
+          ifrPopup.classList.remove('visible');
+          cardPopup.classList.remove('visible');
+        } else if (liveUrl) {
           if (ifrFrame.dataset.loaded !== liveUrl) {
             ifrFrame.src = liveUrl;
             ifrFrame.dataset.loaded = liveUrl;
@@ -547,6 +594,7 @@ footer {
           positionEl(ifrPopup, e);
           ifrPopup.classList.add('visible');
           cardPopup.classList.remove('visible');
+          document.getElementById('imgPopup').classList.remove('visible');
         } else {
           ppName.textContent   = r.name;
           ppDesc.textContent   = r.description || 'No description.';
@@ -559,10 +607,13 @@ footer {
           positionEl(cardPopup, e);
           cardPopup.classList.add('visible');
           ifrPopup.classList.remove('visible');
+          document.getElementById('imgPopup').classList.remove('visible');
         }
       });
       el.addEventListener('mousemove', function(e) {
-        positionEl(el.dataset.liveUrl ? ifrPopup : cardPopup, e);
+        var screenshot = el.dataset.screenshot || null;
+        var liveUrl    = el.dataset.liveUrl    || null;
+        positionEl(screenshot ? document.getElementById('imgPopup') : liveUrl ? ifrPopup : cardPopup, e);
       });
       el.addEventListener('mouseleave', function() {
         hideTimer = setTimeout(hideAll, 120);
