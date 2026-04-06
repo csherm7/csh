@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Projects — Cody Sherman</title>
+
+<meta property="og:type"        content="website">
+<meta property="og:url"         content="https://codysherman.net/projects.html">
+<meta property="og:title"       content="Projects — Cody Sherman">
+<meta property="og:description" content="GitHub projects by Cody Sherman — systems, tools, and code.">
+<meta property="og:image"       content="https://codysherman.net/og-image.png">
+<meta name="twitter:card"        content="summary_large_image">
+<meta name="twitter:title"       content="Projects — Cody Sherman">
+<meta name="twitter:description" content="GitHub projects by Cody Sherman — systems, tools, and code.">
+<meta name="twitter:image"       content="https://codysherman.net/og-image.png">
+
+<link rel="icon" type="image/x-icon"         href="/favicon.ico">
+<link rel="icon" type="image/png" sizes="16x16"  href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32"  href="/favicon-32x32.png">
+<link rel="apple-touch-icon" sizes="180x180"     href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-chrome-192x192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-chrome-512x512.png">
+
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Grotesk:wght@300;400;500&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; cursor: crosshair !important; }
+
+:root {
+  --bg:      #030814;
+  --surface: #07101f;
+  --cyan:    #00cfff;
+  --cyan2:   #0080aa;
+  --magenta: #e8005a;
+  --text:    #c8e4f0;
+  --muted:   #4a7a96;
+  --mono:    'Space Mono', monospace;
+  --body:    'Space Grotesk', sans-serif;
+  --vt:      'VT323', monospace;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: var(--body); font-weight: 300;
+  min-height: 100vh; overflow-x: hidden;
+}
+body::before {
+  content: ''; position: fixed; inset: 0;
+  background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.04) 3px, rgba(0,0,0,0.04) 4px);
+  pointer-events: none; z-index: 9997;
+}
+
+/* Coord grid */
+.coord-grid {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none;
+  background-image:
+    linear-gradient(rgba(0,207,255,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,207,255,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
+
+/* Orbital system — same as main page */
+.orbital-system {
+  position: fixed; top: 50vh; left: 50vw;
+  width: 0; height: 0; pointer-events: none; z-index: 1;
+}
+.ring {
+  position: absolute; border-radius: 50%;
+  border: 1px solid rgba(0,207,255,0.07);
+  transform: translate(-50%, -50%);
+}
+.ring.r1 { width: 280px;  height: 280px; }
+.ring.r2 { width: 440px;  height: 440px; opacity: 0.8; }
+.ring.r3 { width: 620px;  height: 620px; opacity: 0.65; }
+.ring.r4 { width: 820px;  height: 820px; opacity: 0.5; border-color: rgba(232,0,90,0.06); }
+.ring.r5 { width: 1040px; height: 1040px; opacity: 0.35; }
+.ring.r6 { width: 1300px; height: 1300px; opacity: 0.22; }
+.ring.r7 { width: 1600px; height: 1600px; opacity: 0.14; }
+.orbiter { position: absolute; top: 0; left: 0; width: 0; height: 0; animation: spin linear infinite; }
+.orbiter .dot { position: absolute; border-radius: 50%; transform: translate(-50%,-50%); }
+.o1a { animation-duration: 20s; }
+.o1a .dot { width:4px;height:4px;top:-140px;background:var(--cyan);box-shadow:0 0 6px var(--cyan),0 0 14px var(--cyan);opacity:.8; }
+.o2a { animation-duration: 34s; }
+.o2a .dot { width:5px;height:5px;top:-220px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);opacity:.65; }
+.o2b { animation-duration:34s;animation-delay:-17s; }
+.o2b .dot { width:3px;height:3px;top:-220px;background:var(--magenta);box-shadow:0 0 6px var(--magenta);opacity:.5; }
+.o3a { animation-duration:52s; }
+.o3a .dot { width:6px;height:6px;top:-310px;background:#fff;box-shadow:0 0 6px rgba(255,255,255,.8);opacity:.55; }
+.o3b { animation-duration:52s;animation-delay:-26s; }
+.o3b .dot { width:4px;height:4px;top:-310px;background:var(--cyan);box-shadow:0 0 8px var(--cyan);opacity:.5; }
+.o3c { animation-duration:52s;animation-delay:-12s; }
+.o3c .dot { width:3px;height:3px;top:-310px;background:var(--magenta);box-shadow:0 0 5px var(--magenta);opacity:.45; }
+.o4a { animation-duration:76s; }
+.o4a .dot { width:5px;height:5px;top:-410px;background:var(--magenta);box-shadow:0 0 10px var(--magenta),0 0 24px var(--magenta);opacity:.6; }
+.o4b { animation-duration:76s;animation-delay:-38s; }
+.o4b .dot { width:3px;height:3px;top:-410px;background:var(--cyan);opacity:.4; }
+.o4c { animation-duration:76s;animation-delay:-18s; }
+.o4c .dot { width:4px;height:4px;top:-410px;background:#fff;opacity:.3; }
+.o5a { animation-duration:108s; }
+.o5a .dot { width:7px;height:7px;top:-520px;background:var(--cyan);box-shadow:0 0 12px var(--cyan);opacity:.5; }
+.o5b { animation-duration:108s;animation-delay:-54s; }
+.o5b .dot { width:4px;height:4px;top:-520px;background:var(--magenta);opacity:.4; }
+.o5c { animation-duration:108s;animation-delay:-36s; }
+.o5c .dot { width:3px;height:3px;top:-520px;background:#fff;opacity:.25; }
+.o6a { animation-duration:150s;animation-direction:reverse; }
+.o6a .dot { width:4px;height:4px;top:-650px;background:var(--cyan);opacity:.35; }
+.o6b { animation-duration:150s;animation-direction:reverse;animation-delay:-74s; }
+.o6b .dot { width:5px;height:5px;top:-650px;background:var(--magenta);opacity:.3; }
+.o7a { animation-duration:220s; }
+.o7a .dot { width:5px;height:5px;top:-800px;background:var(--cyan);opacity:.25; }
+.o7b { animation-duration:220s;animation-delay:-110s; }
+.o7b .dot { width:3px;height:3px;top:-800px;background:#fff;opacity:.18; }
+
+/* Center pulsar */
+.center-pulsar {
+  position: absolute; width: 8px; height: 8px; border-radius: 50%;
+  background: var(--cyan); transform: translate(-50%,-50%);
+  box-shadow: 0 0 12px var(--cyan), 0 0 30px var(--cyan), 0 0 60px rgba(0,207,255,0.4);
+  animation: centerPulse 8s ease-in-out infinite; z-index: 5;
+}
+.center-pulsar::before, .center-pulsar::after {
+  content:''; position:absolute; border-radius:50%;
+  border:1px solid rgba(0,207,255,0.3);
+  top:50%; left:50%; transform:translate(-50%,-50%);
+  animation: centerRingExpand 32s ease-out infinite;
+}
+.center-pulsar::after { animation-delay:-16s; }
+@keyframes centerPulse {
+  0%,100%{opacity:1;transform:translate(-50%,-50%) scale(1);}
+  50%{opacity:.4;transform:translate(-50%,-50%) scale(.6);}
+}
+@keyframes centerRingExpand {
+  0%{width:8px;height:8px;opacity:.5;} 100%{width:80px;height:80px;opacity:0;}
+}
+
+/* Pulsar rings from main */
+.pulsar { position:absolute; top:0; left:0; width:0; height:0; pointer-events:none; }
+.pulsar-core {
+  position:absolute; width:6px; height:6px; border-radius:50%; background:#fff;
+  transform:translate(-50%,-50%);
+  box-shadow:0 0 6px 2px var(--cyan),0 0 18px 4px rgba(0,207,255,.5);
+  animation:pulsarCore 2.4s ease-in-out infinite;
+}
+@keyframes pulsarCore {
+  0%,100%{transform:translate(-50%,-50%) scale(1);opacity:1;}
+  50%{transform:translate(-50%,-50%) scale(1.6);opacity:.7;}
+}
+.pulsar-ring {
+  position:absolute; border-radius:50%; border:1px solid var(--cyan);
+  transform:translate(-50%,-50%) scale(0); opacity:0;
+  animation:pulsarRing 9.6s ease-out infinite;
+}
+.pr1{width:60px;height:60px;animation-delay:0s;}
+.pr2{width:60px;height:60px;animation-delay:-3.2s;}
+.pr3{width:60px;height:60px;animation-delay:-6.4s;}
+@keyframes pulsarRing {
+  0%{transform:translate(-50%,-50%) scale(0);opacity:.6;}
+  100%{transform:translate(-50%,-50%) scale(4);opacity:0;}
+}
+.pulsar-beam {
+  position:absolute; width:120px; height:1px; top:0; left:0;
+  transform-origin:0 0;
+  background:linear-gradient(90deg,rgba(0,207,255,.6),transparent);
+  animation:pulsarBeam 4s linear infinite; opacity:.35;
+}
+.pb2{width:80px;animation-duration:6.5s;animation-direction:reverse;background:linear-gradient(90deg,rgba(232,0,90,.5),transparent);opacity:.25;}
+@keyframes pulsarBeam{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+/* HEADER */
+header {
+  position: fixed; top:0; left:0; right:0; z-index:200;
+  padding: 0.9rem 2rem;
+  display: flex; justify-content: space-between; align-items: center;
+  background: rgba(3,8,20,0.92); backdrop-filter: blur(10px);
+  border-bottom: 1px solid rgba(0,207,255,0.1);
+}
+.logo-group { display:flex; flex-direction:column; }
+.logo-main { font-family:var(--mono); font-size:0.72rem; color:#fff; letter-spacing:0.12em; font-weight:700; }
+.logo-sub  { font-family:var(--vt); font-size:0.78rem; color:var(--cyan); opacity:0.5; letter-spacing:0.15em; }
+.header-r  { display:flex; align-items:center; gap:2rem; }
+.back-link {
+  font-family:var(--mono); font-size:0.6rem; letter-spacing:0.15em;
+  color:var(--cyan); opacity:0.55; text-decoration:none;
+  transition:opacity 0.2s;
+}
+.back-link:hover { opacity:1; }
+.hclock { font-family:var(--vt); font-size:0.95rem; color:var(--cyan); opacity:0.55; letter-spacing:0.1em; }
+
+/* MAIN */
+main { padding: 7rem 2.5rem 5rem; position:relative; z-index:10; max-width: 1100px; margin: 0 auto; }
+
+.page-title {
+  font-family:var(--mono); font-weight:700;
+  font-size:clamp(2.5rem,6vw,5rem);
+  color:#fff; line-height:1; letter-spacing:-0.02em;
+  text-shadow:0 0 40px rgba(0,207,255,0.18);
+  margin-bottom:0.5rem;
+}
+.page-sub {
+  font-family:var(--vt); font-size:1rem; letter-spacing:0.2em;
+  color:var(--cyan); opacity:0.5; margin-bottom:3rem;
+}
+.page-sub a { color:var(--cyan); text-decoration:none; }
+.page-sub a:hover { opacity:0.8; }
+
+.s-label {
+  font-family:var(--mono); font-size:0.6rem; letter-spacing:0.25em;
+  color:var(--cyan); opacity:0.45; margin-bottom:2rem;
+  display:flex; align-items:center; gap:1rem;
+}
+.s-label::after { content:''; flex:1; height:1px; background:var(--cyan); opacity:0.1; max-width:300px; }
+
+/* Loading state */
+#loading {
+  font-family:var(--vt); font-size:1.1rem; letter-spacing:0.2em;
+  color:var(--cyan); opacity:0.5; padding:2rem 0;
+}
+
+/* Repo list */
+.repo-list { display:flex; flex-direction:column; }
+.repo-item {
+  display:grid; grid-template-columns:4rem 1fr 1fr;
+  align-items:start; gap:3rem;
+  padding:2rem 0;
+  border-top:1px solid rgba(0,207,255,0.07);
+  transition:opacity 0.2s;
+  position:relative;
+}
+.repo-item:last-child { border-bottom:1px solid rgba(0,207,255,0.07); }
+.repo-item:hover { opacity:0.75; }
+.repo-n { font-family:var(--mono); font-size:0.65rem; color:var(--cyan); opacity:0.3; letter-spacing:0.1em; padding-top:0.2rem; }
+.repo-title { font-family:var(--mono); font-size:0.88rem; color:#c0dff0; font-weight:700; letter-spacing:0.04em; margin-bottom:0.4rem; }
+.repo-link { text-decoration:none; color:inherit; }
+.repo-desc { font-size:0.8rem; line-height:1.85; color:var(--muted); }
+.repo-meta { display:flex; flex-wrap:wrap; gap:0.5rem; margin-top:0.75rem; }
+.repo-tag {
+  font-family:var(--vt); font-size:0.82rem; letter-spacing:0.1em;
+  color:var(--cyan); opacity:0.5; border:1px solid rgba(0,207,255,0.15);
+  padding:0.1rem 0.5rem;
+}
+.repo-updated { font-family:var(--mono); font-size:0.55rem; color:var(--muted); letter-spacing:0.1em; padding-top:0.25rem; }
+.repo-arrow { font-size:1rem; color:var(--cyan); opacity:0.3; padding-top:0.15rem; transition:transform 0.2s, opacity 0.2s; }
+.repo-live { font-family:var(--mono); font-size:0.6rem; letter-spacing:0.12em; color:var(--cyan); opacity:0.6; text-decoration:none; padding-top:0.15rem; display:block; transition:opacity 0.2s; }
+.repo-live:hover { opacity:1; }
+.repo-item:hover .repo-arrow { transform:translateX(4px); opacity:0.8; }
+
+/* Preview popup */
+.preview-popup {
+  position:fixed; z-index:9000; pointer-events:none;
+  opacity:0; transform:translateY(8px) scale(0.97);
+  transition:opacity 0.2s ease, transform 0.2s ease;
+  border:1px solid rgba(0,207,255,0.2);
+  box-shadow:0 0 40px rgba(0,207,255,0.08),0 20px 60px rgba(0,0,0,0.85);
+  background:#050e1c; width:300px; padding:1.2rem 1.4rem;
+}
+.preview-popup.visible { opacity:1; transform:translateY(0) scale(1); }
+.preview-popup .pp-name {
+  font-family:var(--mono); font-size:0.78rem; font-weight:700;
+  color:#c0dff0; letter-spacing:0.06em; margin-bottom:0.5rem;
+}
+.preview-popup .pp-desc {
+  font-size:0.72rem; line-height:1.6; color:var(--muted); margin-bottom:0.8rem;
+  display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden;
+}
+.preview-popup .pp-meta { display:flex; flex-wrap:wrap; gap:0.35rem; margin-bottom:0.8rem; }
+.preview-popup .pp-tag {
+  font-family:var(--vt); font-size:0.78rem; letter-spacing:0.1em;
+  color:var(--cyan); opacity:0.6; border:1px solid rgba(0,207,255,0.15);
+  padding:0.05rem 0.4rem;
+}
+.preview-popup .pp-footer {
+  font-family:var(--mono); font-size:0.52rem; letter-spacing:0.12em;
+  color:var(--cyan); opacity:0.35; border-top:1px solid rgba(0,207,255,0.1);
+  padding-top:0.6rem;
+}
+
+/* Iframe popup for live github.io pages */
+.iframe-popup {
+  position:fixed; z-index:9001; pointer-events:none;
+  opacity:0; transform:translateY(8px) scale(0.97);
+  transition:opacity 0.2s ease, transform 0.2s ease;
+  border:1px solid rgba(0,207,255,0.2);
+  box-shadow:0 0 40px rgba(0,207,255,0.1),0 20px 60px rgba(0,0,0,0.85);
+  background:#050e1c; width:360px; height:240px; overflow:hidden;
+}
+.iframe-popup.visible { opacity:1; transform:translateY(0) scale(1); }
+.iframe-popup iframe {
+  width:1440px; height:960px; border:none;
+  transform:scale(0.25); transform-origin:top left;
+  pointer-events:none;
+}
+.iframe-popup .iframe-label {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:0.3rem 0.75rem;
+  background:rgba(3,8,20,0.92); border-top:1px solid rgba(0,207,255,0.12);
+  font-family:var(--vt); font-size:0.75rem; letter-spacing:0.12em;
+  color:var(--cyan); opacity:0.65;
+}
+
+footer {
+  display:flex; justify-content:space-between;
+  font-family:var(--mono); font-size:0.6rem; letter-spacing:0.12em; color:var(--muted);
+  position:relative; z-index:10;
+}
+
+@media (max-width:680px) {
+  header { padding:0.6rem 1rem; flex-direction:column; align-items:flex-start; gap:0.4rem; }
+  .header-r { width:100%; justify-content:space-between; }
+  main { padding:8rem 1.2rem 3rem; }
+  .repo-item { grid-template-columns:2.5rem 1fr; gap:1rem; }
+  .repo-updated { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div class="coord-grid"></div>
+
+<!-- Orbital system -->
+<div class="orbital-system">
+  <div class="center-pulsar"></div>
+  <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+  <div class="ring r4"></div><div class="ring r5"></div><div class="ring r6"></div><div class="ring r7"></div>
+  <div class="pulsar">
+    <div class="pulsar-core"></div>
+    <div class="pulsar-ring pr1"></div>
+    <div class="pulsar-ring pr2"></div>
+    <div class="pulsar-ring pr3"></div>
+    <div class="pulsar-beam pb1"></div>
+    <div class="pulsar-beam pb2"></div>
+  </div>
+  <div class="orbiter o1a"><div class="dot"></div></div>
+  <div class="orbiter o2a"><div class="dot"></div></div>
+  <div class="orbiter o2b"><div class="dot"></div></div>
+  <div class="orbiter o3a"><div class="dot"></div></div>
+  <div class="orbiter o3b"><div class="dot"></div></div>
+  <div class="orbiter o3c"><div class="dot"></div></div>
+  <div class="orbiter o4a"><div class="dot"></div></div>
+  <div class="orbiter o4b"><div class="dot"></div></div>
+  <div class="orbiter o4c"><div class="dot"></div></div>
+  <div class="orbiter o5a"><div class="dot"></div></div>
+  <div class="orbiter o5b"><div class="dot"></div></div>
+  <div class="orbiter o5c"><div class="dot"></div></div>
+  <div class="orbiter o6a"><div class="dot"></div></div>
+  <div class="orbiter o6b"><div class="dot"></div></div>
+  <div class="orbiter o7a"><div class="dot"></div></div>
+  <div class="orbiter o7b"><div class="dot"></div></div>
+</div>
+
+<!-- Card popup for non-pages repos -->
+<div class="preview-popup" id="previewPopup">
+  <div class="pp-name" id="ppName"></div>
+  <div class="pp-desc" id="ppDesc"></div>
+  <div class="pp-meta" id="ppMeta"></div>
+  <div class="pp-footer" id="ppFooter"></div>
+</div>
+
+<!-- Iframe popup for live github.io pages -->
+<div class="iframe-popup" id="iframePopup">
+  <iframe id="iframePreview" src="" sandbox="allow-scripts allow-same-origin"></iframe>
+  <div class="iframe-label" id="iframeLabel"></div>
+</div>
+
+<header>
+  <div class="logo-group">
+    <div class="logo-main">CODY SHERMAN</div>
+    <div class="logo-sub">SYSTEMS / MUSIC</div>
+  </div>
+  <div class="header-r">
+    <a class="back-link" href="/">← index</a>
+    <div class="hclock" id="clock">00:00:00.000 UTC</div>
+  </div>
+</header>
+
+<main>
+  <div class="page-title">PROJECTS</div>
+  <div class="page-sub">
+    // <a href="https://github.com/csherm7" target="_blank">github.com/csherm7 ↗</a>
+  </div>
+
+  <div class="s-label">// REPOSITORIES</div>
+  <div id="loading">FETCHING REPOSITORIES...</div>
+  <div class="repo-list" id="repoList"></div>
+</main>
+
+<footer>
+  <span>© 2025 CODY SHERMAN</span>
+  <a href="/" style="color:var(--muted);text-decoration:none;letter-spacing:0.12em;">← codysherman.net</a>
+</footer>
+
+<script>
+  // UTC clock
+  function updateClock() {
+    var now = new Date();
+    var pad = function(n) { return String(n).padStart(2,'0'); };
+    var ms  = String(now.getUTCMilliseconds()).padStart(3,'0');
+    document.getElementById('clock').textContent =
+      pad(now.getUTCHours())+':'+pad(now.getUTCMinutes())+':'+pad(now.getUTCSeconds())+'.'+ms+' UTC';
+  }
+  updateClock();
+  setInterval(updateClock, 50);
+
+  // Fallback is empty — repos with github.io pages are unknown without the API
+  var FALLBACK_REPOS = [];
+
+  function makeRepoItem(repo, i) {
+    var updated = new Date(repo.pushed_at).toISOString().slice(0,10);
+    var desc    = repo.description || '—';
+    var lang    = repo.language    || '';
+    var stars   = repo.stargazers_count || 0;
+    var forks   = repo.forks_count || 0;
+    var liveUrl = (repo.has_pages && (!repo.homepage || repo.homepage.indexOf('github.io') !== -1))
+      ? 'https://csherm7.github.io/' + repo.name + '/' : null;
+    if (liveUrl) item.dataset.liveUrl = liveUrl;
+    var item    = document.createElement('div');
+    item.className = 'repo-item';
+    item.dataset.previewLabel = repo.name;
+    item.innerHTML =
+      '<div class="repo-n">' + String(i+1).padStart(2,'0') + '</div>' +
+      '<div>' +
+        '<a class="repo-link" href="' + repo.html_url + '" target="_blank">' +
+          '<div class="repo-title">' + repo.name + '</div>' +
+        '</a>' +
+        '<div class="repo-desc">' + desc + '</div>' +
+        '<div class="repo-meta">' +
+          (lang   ? '<span class="repo-tag">' + lang + '</span>' : '') +
+          (stars  ? '<span class="repo-tag">&#9733; ' + stars + '</span>' : '') +
+          (forks  ? '<span class="repo-tag">&#8965; ' + forks + '</span>' : '') +
+          (liveUrl ? '<span class="repo-tag">&#9679; live</span>' : '') +
+        '</div>' +
+      '</div>' +
+      '<div>' +
+        '<div class="repo-updated">UPDATED ' + updated + '</div>' +
+        (liveUrl
+          ? '<a class="repo-live" href="' + liveUrl + '" target="_blank">&nearr; view live</a>'
+          : '<div class="repo-arrow">&rarr;</div>') +
+      '</div>';
+    item._repoData = repo;
+    item.addEventListener('click', function(e) {
+      if (!e.target.closest('a')) window.open(repo.html_url, '_blank');
+    });
+    return item;
+  }
+
+  function renderRepos(pagesRepos, standardRepos) {
+    var list = document.getElementById('repoList');
+    list.innerHTML = '';
+
+    function addSection(label, repos, offset) {
+      if (repos.length === 0) return;
+      var heading = document.createElement('div');
+      heading.className = 's-label';
+      heading.style.marginTop = '2rem';
+      heading.textContent = label;
+      list.appendChild(heading);
+      repos.forEach(function(repo, i) {
+        list.appendChild(makeRepoItem(repo, i + offset));
+      });
+    }
+
+    addSection('// GITHUB PAGES — LIVE', pagesRepos, 0);
+    addSection('// ALL REPOSITORIES', standardRepos, pagesRepos.length);
+    initPreviews();
+  }
+
+  function loadRepos() {
+    var loading = document.getElementById('loading');
+    fetch('https://api.github.com/users/csherm7/repos?sort=updated&per_page=50&type=public')
+      .then(function(res) {
+        if (!res.ok) throw new Error('HTTP ' + res.status);
+        return res.json();
+      })
+      .then(function(repos) {
+        if (!Array.isArray(repos) || repos.length === 0) throw new Error('empty');
+        // Split into github.io paged repos and standard repos
+        // Exclude repos with a custom domain homepage
+        var ghPages = repos.filter(function(r) {
+          if (!r.has_pages) return false;
+          var home = (r.homepage || '').toLowerCase();
+          if (home && home.indexOf('github.io') === -1) return false;
+          return true;
+        });
+        var standard = repos.filter(function(r) {
+          if (r.has_pages) {
+            var home = (r.homepage || '').toLowerCase();
+            if (home && home.indexOf('github.io') === -1) return false;
+            return false; // already in ghPages
+          }
+          return true;
+        });
+        loading.style.display = 'none';
+        renderRepos(ghPages, standard);
+      })
+      .catch(function(err) {
+        console.warn('GitHub API unavailable:', err);
+        loading.style.fontFamily = 'var(--vt)';
+        loading.style.fontSize = '0.9rem';
+        loading.style.letterSpacing = '0.15em';
+        loading.textContent = '// GITHUB PAGES REPOS LOAD ON DEPLOYED SITE';
+      });
+  }
+
+  function initPreviews() {
+    var cardPopup  = document.getElementById('previewPopup');
+    var ifrPopup   = document.getElementById('iframePopup');
+    var ifrFrame   = document.getElementById('iframePreview');
+    var ifrLabel   = document.getElementById('iframeLabel');
+    var ppName     = document.getElementById('ppName');
+    var ppDesc     = document.getElementById('ppDesc');
+    var ppMeta     = document.getElementById('ppMeta');
+    var ppFooter   = document.getElementById('ppFooter');
+    var MARGIN     = 16;
+    var hideTimer  = null;
+
+    function hideAll() {
+      cardPopup.classList.remove('visible');
+      ifrPopup.classList.remove('visible');
+    }
+    function positionEl(el, e) {
+      var vw = window.innerWidth, vh = window.innerHeight;
+      var W  = el.offsetWidth,   H  = el.offsetHeight;
+      var x  = e.clientX + 20,  y  = e.clientY - H/2;
+      if (x + W > vw - MARGIN) x = e.clientX - W - 20;
+      if (y < MARGIN) y = MARGIN;
+      if (y + H > vh - MARGIN) y = vh - H - MARGIN;
+      el.style.left = x + 'px';
+      el.style.top  = y + 'px';
+    }
+
+    document.querySelectorAll('[data-preview-label]').forEach(function(el) {
+      el.addEventListener('mouseenter', function(e) {
+        clearTimeout(hideTimer);
+        var r       = el._repoData;
+        var liveUrl = el.dataset.liveUrl || null;
+        if (!r) return;
+        if (liveUrl) {
+          if (ifrFrame.dataset.loaded !== liveUrl) {
+            ifrFrame.src = liveUrl;
+            ifrFrame.dataset.loaded = liveUrl;
+          }
+          ifrLabel.textContent = liveUrl.replace('https://', '') + ' ↗';
+          positionEl(ifrPopup, e);
+          ifrPopup.classList.add('visible');
+          cardPopup.classList.remove('visible');
+        } else {
+          ppName.textContent   = r.name;
+          ppDesc.textContent   = r.description || 'No description.';
+          ppFooter.textContent = 'UPDATED ' + new Date(r.pushed_at).toISOString().slice(0,10) +
+                                 ' · github.com/csherm7/' + r.name;
+          ppMeta.innerHTML = '';
+          if (r.language)         ppMeta.innerHTML += '<span class="pp-tag">' + r.language + '</span>';
+          if (r.stargazers_count) ppMeta.innerHTML += '<span class="pp-tag">&#9733; ' + r.stargazers_count + '</span>';
+          if (r.forks_count)      ppMeta.innerHTML += '<span class="pp-tag">&#8965; ' + r.forks_count + '</span>';
+          positionEl(cardPopup, e);
+          cardPopup.classList.add('visible');
+          ifrPopup.classList.remove('visible');
+        }
+      });
+      el.addEventListener('mousemove', function(e) {
+        positionEl(el.dataset.liveUrl ? ifrPopup : cardPopup, e);
+      });
+      el.addEventListener('mouseleave', function() {
+        hideTimer = setTimeout(hideAll, 120);
+      });
+    });
+  }
+
+  loadRepos();
+</script>
+</body>
+</html>
