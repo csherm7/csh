@@ -475,21 +475,21 @@ footer {
       })
       .then(function(repos) {
         if (!Array.isArray(repos) || repos.length === 0) throw new Error('empty');
-        // Split into github.io paged repos and standard repos
-        // Exclude repos with a custom domain homepage
-        var ghPages = repos.filter(function(r) {
-          if (!r.has_pages) return false;
-          var home = (r.homepage || '').toLowerCase();
-          if (home && home.indexOf('github.io') === -1) return false;
-          return true;
-        });
-        var standard = repos.filter(function(r) {
-          if (r.has_pages) {
-            var home = (r.homepage || '').toLowerCase();
-            if (home && home.indexOf('github.io') === -1) return false;
-            return false; // already in ghPages
+        console.log('API returned', repos.length, 'repos. has_pages counts:', repos.filter(function(r){return r.has_pages;}).length);
+        // Split repos: pages repos (github.io or no custom domain) vs standard
+        var ghPages  = [];
+        var standard = [];
+        repos.forEach(function(r) {
+          var home = (r.homepage || '').toLowerCase().trim();
+          var hasCustomDomain = home && home.indexOf('github.io') === -1 &&
+                                home.indexOf('codysherman.net') === -1 &&
+                                home.indexOf('lambdacorporation.net') === -1;
+          if (r.has_pages && !hasCustomDomain) {
+            ghPages.push(r);
+          } else if (!hasCustomDomain) {
+            standard.push(r);
           }
-          return true;
+          // repos with custom domains are excluded entirely
         });
         loading.style.display = 'none';
         renderRepos(ghPages, standard);
